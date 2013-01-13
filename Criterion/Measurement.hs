@@ -21,8 +21,9 @@ module Criterion.Measurement
     ) where
     
 import Control.Monad (when)
-import Data.Time.Clock.POSIX (getPOSIXTime)
 import Text.Printf (printf)
+
+import qualified System.Clock
         
 time :: IO a -> IO (Double, a)
 time act = do
@@ -40,7 +41,12 @@ time_ act = do
   return $! end - start
 
 getTime :: IO Double
-getTime = realToFrac `fmap` getPOSIXTime
+getTime = do
+    -- TODO: Paramaterize the clock type
+    t <- System.Clock.getTime System.Clock.ProcessCPUTime
+    let sec = fromIntegral $! System.Clock.sec t 
+        nsec = fromIntegral $! System.Clock.nsec t 
+    return (sec + nsec * 1.0e-9)
 
 runForAtLeast :: Double -> Int -> (Int -> IO a) -> IO (Double, Int, a)
 runForAtLeast howLong initSeed act = loop initSeed (0::Int) =<< getTime
