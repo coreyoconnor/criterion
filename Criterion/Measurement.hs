@@ -19,7 +19,7 @@ module Criterion.Measurement
     , time
     , time_
     ) where
-    
+
 import Control.Monad (when)
 import Text.Printf (printf)
 
